@@ -33,6 +33,23 @@ systemctl enable mysqld &>>$logfile
 validate $? "enabling MySQL Server"
 systemctl start mysqld &>>$logfile
 validate $? "Starting MySQL Server is"
-mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$logfile
-validate $? "Setting some root password"
+
+
+#below is the code for non idempotancy 
+# <mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$logfile
+# validate $? "Setting some root password">
+
+#below command will be usefull for idempotent nature
+
+mysql -h chinmai.cloud -uroot -pExpenseApp@1 -e 'show databses;' &>>$logfile
+if [ $? -ne 0 ]
+then
+    mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$logfile
+    validate $? "Setting some root password"
+else
+    echo -e "Root swd is already set up so \e[33m skipping $N"
+fi
+
+
+
 
