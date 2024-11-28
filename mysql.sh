@@ -1,7 +1,7 @@
 #!/bin/bash
 
 userid=$(id -u)
-timestamp=$(date -%F+%H+%M+%S)
+timestamp=$(date +%F-%H-%M-%S)
 scriptname=$(echo $0 | cut -d "." -f1)
 logfile=/tmp/$scriptname-$timestamp.log
 R="\e[31m"
@@ -34,4 +34,5 @@ validate $? "enabling MySQL Server"
 systemctl start mysqld &>>$logfile
 validate $? "Starting MySQL Server is"
 mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$logfile
+validate $? "Setting some root password"
 
