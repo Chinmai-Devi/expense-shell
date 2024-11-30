@@ -58,7 +58,7 @@ VALIDATE $? "Unzipping thw downloaded code"
 npm install
 VALIDATE $? "installing node js dependencies"
 
-
+cp 
 
 
 
