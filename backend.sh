@@ -30,57 +30,55 @@ else
 fi
 
 dnf module disable nodejs -y &>>$LOGFILE
-VALIDATE $? "Disabling default node js"
+VALIDATE $? "Disabling default nodejs"
 
 dnf module enable nodejs:20 -y &>>$LOGFILE
-VALIDATE $? "Enabling nodejs"
+VALIDATE $? "Enabling nodejs:20 version"
 
 dnf install nodejs -y &>>$LOGFILE
-VALIDATE $? "Installing Node js"
+VALIDATE $? "Installing nodejs"
 
-if expense [ $? -ne 0 ]
-then  
+id expense &>>$LOGFILE
+if [ $? -ne 0 ]
+then
     useradd expense &>>$LOGFILE
-    VALIDATE $? "creating expense user"
+    VALIDATE $? "Creating expense user"
 else
-    echo -e "user already existed .. $Y skipping $N"
+    echo -e "Expense user already created...$Y SKIPPING $N"
 fi
 
-
-mkdir -p /app  &>>$LOGFILE  # -p is used for mkdir, if directory is not there then it will create otherwise it will silent and not throw error
-VALIDATE $? "creating app directory"
+mkdir -p /app &>>$LOGFILE
+VALIDATE $? "Creating app directory"
 
 curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip &>>$LOGFILE
-VALIDATE $? "downloading backend code"
+VALIDATE $? "Downloading backend code"
 
-cd /app &>>$LOGFILE
-rm -rf /app/*   #this cmnd is useful to remove the files in that directory or folder. We are using this bcoz, if we run that again then it will throw a pop up message but as we are not running this cmd manually, we will be stuck in o/p window.
+cd /app
+rm -rf /app/*
 unzip /tmp/backend.zip &>>$LOGFILE
-VALIDATE $? "Unzipping the downloaded code"
+VALIDATE $? "Extracted backend code"
 
 npm install &>>$LOGFILE
-VALIDATE $? "installing node js dependencies"
+VALIDATE $? "Installing nodejs dependencies"
 
-cp /home/ec2-user/expense-shell/backend.service /etc/systemd/backend.service &>>$LOGFILE
+#check your repo and path
+cp /home/ec2-user/expense-shell/backend.service /etc/systemd/system/backend.service &>>$LOGFILE
 VALIDATE $? "Copied backend service"
 
 systemctl daemon-reload &>>$LOGFILE
-VALIDATE $? "daemon reloading"
+VALIDATE $? "Daemon Reload"
 
 systemctl start backend &>>$LOGFILE
 VALIDATE $? "Starting backend"
 
 systemctl enable backend &>>$LOGFILE
-VALIDATE $? "enabling backend "
+VALIDATE $? "Enabling backend"
 
 dnf install mysql -y &>>$LOGFILE
-VALIDATE $? "installing mysql"
+VALIDATE $? "Installing MySQL Client"
 
-mysql -h chinmai.cloud -uroot -p${mysql_root_password} < /app/schema/backend.sql &>>$LOGFILE
-VALIDATE $? "schema loading"
+mysql -h db.daws78s.online -uroot -p${mysql_root_password} < /app/schema/backend.sql &>>$LOGFILE
+VALIDATE $? "Schema loading"
 
 systemctl restart backend &>>$LOGFILE
-VALIDATE $? "restarting backend"
-
-
-
+VALIDATE $? "Restarting Backend"
