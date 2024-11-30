@@ -38,19 +38,19 @@ validate $? "Starting MySQL Server is"
 
 
 #below is the code for non idempotancy 
-# <mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$logfile
-# validate $? "Setting some root password">
+mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$logfile
+validate $? "Setting some root password"
 
 #below command will be usefull for idempotent nature
 
-mysql -h chinmai.cloud -uroot -p${mysql_root_password} -e 'show databases;' &>>$logfile
-if [ $? -ne 0 ]
-then
-    mysql_secure_installation --set-root-pass ${mysql_root_password} &>>$logfile
-    validate $? "Setting some root password"
-else
-    echo -e "Root swd is already set up so \e[33m skipping $N"
-fi
+# mysql -h chinmai.cloud -uroot -p${mysql_root_password} -e 'show databases;' &>>$logfile
+# if [ $? -ne 0 ]
+# then
+#     mysql_secure_installation --set-root-pass ${mysql_root_password} &>>$logfile
+#     validate $? "Setting some root password"
+# else
+#     echo -e "Root swd is already set up so \e[33m skipping $N"
+# fi
 
 
 
