@@ -54,6 +54,7 @@ curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expen
 VALIDATE $? "downloading backend code"
 
 cd /app &>>$LOGFILE
+rm -rf /app/*   #this cmnd is useful to remove the files in that directory or folder. We are using this bcoz, if we run that again then it will throw a pop up message but as we are not running this cmd manually, we will be stuck in o/p window.
 unzip /tmp/backend.zip &>>$LOGFILE
 VALIDATE $? "Unzipping thw downloaded code"
 
