@@ -44,3 +44,21 @@ else
     echo -e "user already existed .. $Y skipping $N"
 fi
 
+
+mkdir -p /app  # -p is used for mkdir, if directory is not there then it will create otherwise it will silent and not throw error
+VALIDATE $? "creating app directory"
+
+curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
+VALIDATE $? "downloading backend code"
+
+cd /app
+unzip /tmp/backend.zip
+VALIDATE $? "Unzipping thw downloaded code"
+
+npm install
+VALIDATE $? "installing node js dependencies"
+
+
+
+
+
