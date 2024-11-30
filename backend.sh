@@ -56,7 +56,7 @@ VALIDATE $? "downloading backend code"
 cd /app &>>$LOGFILE
 rm -rf /app/*   #this cmnd is useful to remove the files in that directory or folder. We are using this bcoz, if we run that again then it will throw a pop up message but as we are not running this cmd manually, we will be stuck in o/p window.
 unzip /tmp/backend.zip &>>$LOGFILE
-VALIDATE $? "Unzipping thw downloaded code"
+VALIDATE $? "Unzipping the downloaded code"
 
 npm install &>>$LOGFILE
 VALIDATE $? "installing node js dependencies"
@@ -65,7 +65,7 @@ cp /home/ec2-user/expense-shell/backend.service /etc/systemd/backend.service &>>
 VALIDATE $? "Copied backend service"
 
 systemctl daemon-reload &>>$LOGFILE
-VALIDATE $? "daemon reoading"
+VALIDATE $? "daemon reloading"
 
 systemctl start backend &>>$LOGFILE
 VALIDATE $? "starting backend "
