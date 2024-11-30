@@ -3,7 +3,7 @@ Description = Backend Service
 
 [Service]
 User=expense
-Environment=DB_HOST="54.81.144.60"
+Environment=DB_HOST="chinmai.cloud"
 ExecStart=/bin/node /app/index.js
 SyslogIdentifier=backend
 
