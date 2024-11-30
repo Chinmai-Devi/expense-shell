@@ -8,6 +8,8 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
+echo "Please enter DB password:"
+read -s mysql_root_password
 
 VALIDATE(){
    if [ $1 -ne 0 ]
@@ -45,20 +47,39 @@ else
 fi
 
 
-mkdir -p /app  # -p is used for mkdir, if directory is not there then it will create otherwise it will silent and not throw error
+mkdir -p /app  &>>$LOGFILE  # -p is used for mkdir, if directory is not there then it will create otherwise it will silent and not throw error
 VALIDATE $? "creating app directory"
 
-curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
+curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip &>>$LOGFILE
 VALIDATE $? "downloading backend code"
 
-cd /app
-unzip /tmp/backend.zip
+cd /app &>>$LOGFILE
+unzip /tmp/backend.zip &>>$LOGFILE
 VALIDATE $? "Unzipping thw downloaded code"
 
-npm install
+npm install &>>$LOGFILE
 VALIDATE $? "installing node js dependencies"
 
-cp 
+cp /home/ec2-user/expense-shell/backend.service /etc/systemd/backend.service &>>$LOGFILE
+VALIDATE $? "Copied backend service"
+
+systemctl daemon-reload &>>$LOGFILE
+VALIDATE $? "daemon reoading"
+
+systemctl start backend &>>$LOGFILE
+VALIDATE $? "starting backend "
+
+systemctl enable backend &>>$LOGFILE
+VALIDATE $? "enabling backend "
+
+dnf install mysql -y &>>$LOGFILE
+VALIDATE $? "installing mysql"
+
+mysql -h chinmai.cloud -uroot -p${mysql_root_password} < /app/schema/backend.sql &>>$LOGFILE
+VALIDATE $? "schema loading"
+
+systemctl restart backend &>>$LOGFILE
+VALIDATE $? "restarting backend"
 
 
 
