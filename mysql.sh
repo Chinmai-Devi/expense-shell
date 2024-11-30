@@ -1,57 +1,53 @@
 #!/bin/bash
 
-userid=$(id -u)
-timestamp=$(date +%F-%H-%M-%S)
-scriptname=$(echo $0 | cut -d "." -f1)
-logfile=/tmp/$scriptname-$timestamp.log
+USERID=$(id -u)
+TIMESTAMP=$(date +%F-%H-%M-%S)
+SCRIPT_NAME=$(echo $0 | cut -d "." -f1)
+LOGFILE=/tmp/$SCRIPT_NAME-$TIMESTAMP.log
 R="\e[31m"
 G="\e[32m"
+Y="\e[33m"
 N="\e[0m"
+echo "Please enter DB password:"
+read -s mysql_root_password
 
-echo "pls enter DB password"
-read -s mysql_root_password 
-
-validate(){
-    if [ $1 -ne 0 ]
-    then 
-        echo -e "$2 .. $R Failure $N"
+VALIDATE(){
+   if [ $1 -ne 0 ]
+   then
+        echo -e "$2...$R FAILURE $N"
         exit 1
     else
-        echo -e "$2 .. $G Success $N"
+        echo -e "$2...$G SUCCESS $N"
     fi
 }
 
-if [ $userid -eq 0 ]
-    then 
-    echo "you have admin access so proceeding further"
+if [ $USERID -ne 0 ]
+then
+    echo "Please run this script with root access."
+    exit 1 # manually exit if error comes.
 else
-    echo "pls run with admin access"
-    exit 1
+    echo "You are super user."
 fi
 
-dnf install mysql-server -y &>>$logfile
-validate $? "MySQL Server installation is"
-systemctl enable mysqld &>>$logfile
-validate $? "enabling MySQL Server"
-systemctl start mysqld &>>$logfile
-validate $? "Starting MySQL Server is"
 
+dnf install mysql-server -y &>>$LOGFILE
+VALIDATE $? "Installing MySQL Server"
 
-#below is the code for non idempotancy 
-# mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$logfile
-# validate $? "Setting some root password"
+systemctl enable mysqld &>>$LOGFILE
+VALIDATE $? "Enabling MySQL Server"
 
-#below command will be usefull for idempotent nature
+systemctl start mysqld &>>$LOGFILE
+VALIDATE $? "Starting MySQL Server"
 
-mysql -h chinmai.cloud -uroot -p${mysql_root_password} -e 'show databases;' &>>$logfile
+# mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$LOGFILE
+# VALIDATE $? "Setting up root password"
+
+#Below code will be useful for idempotent nature
+mysql -h db.daws78s.online -uroot -p${mysql_root_password} -e 'show databases;' &>>$LOGFILE
 if [ $? -ne 0 ]
 then
-    mysql_secure_installation --set-root-pass ${mysql_root_password} &>>$logfile
-    validate $? "Setting some root password"
+    mysql_secure_installation --set-root-pass ${mysql_root_password} &>>$LOGFILE
+    VALIDATE $? "MySQL Root password Setup"
 else
-    echo -e "Root swd is already set up so \e[33m skipping $N"
+    echo -e "MySQL Root password is already setup...$Y SKIPPING $N"
 fi
-
-
-
-
