@@ -68,7 +68,7 @@ systemctl daemon-reload &>>$LOGFILE
 VALIDATE $? "daemon reloading"
 
 systemctl start backend &>>$LOGFILE
-VALIDATE $? "starting backend "
+VALIDATE $? "Starting backend"
 
 systemctl enable backend &>>$LOGFILE
 VALIDATE $? "enabling backend "
