@@ -47,14 +47,14 @@ else
     echo -e "Expense user already created...$Y SKIPPING $N"
 fi
 
-mkdir -p /app &>>$LOGFILE
+mkdir -p /app &>>$LOGFILE  #-p is used, when directory not created then it will create otherwise instead of throwing the error it simply stay calms..
 VALIDATE $? "Creating app directory"
 
 curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip &>>$LOGFILE
 VALIDATE $? "Downloading backend code"
 
 cd /app
-rm -rf /app/*
+rm -rf /app/* # is for removing the files before copying everytime
 unzip /tmp/backend.zip &>>$LOGFILE
 VALIDATE $? "Extracted backend code"
 
